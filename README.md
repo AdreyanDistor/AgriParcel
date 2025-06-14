@@ -2,10 +2,13 @@
 AgriParcel is a grameowrk for generating large-scale farmland vector datasets from sattelite imagery. By utilizing zero-shot segmentation from [**SAM2**](https://github.com/facebookresearch/sam2) and a fine-tuned [**CLIP**](https://github.com/openai/CLIP) model for farmland classification, we can generate ready to use vector datasets within a GeoJSON file. 
 
 ## AgriParcel Pipeline Steps
-1. Segmentation ```bash (src/sam/run_sam2.py)```
-2. Classification
-3. Delineation
-4. Simplification (optional)
+| Step                  | Description                    | Location / Script                        |
+| --------------------- | ------------------------------ | ---------------------------------------- |
+| **1. Segmentation**   | Generate masks using SAM2      | `src/sam2/run_sam2.py`                   |
+| **2. Classification** | Classify masks using CLIP      | `src/clip/train.py` & `src/clip/test.py` |
+| **3. Delineation**    | Extract polygons from masks    | `src/delineation/object_delineation.py`  |
+| **4. Simplification** | (Optional) Simplify geometries | `src/simplify/simplify_utils.py`         |
+
 
 ## Setup
 AgriParcel requires Python 3.8 at least
