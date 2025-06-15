@@ -16,6 +16,10 @@ AgriParcel requires Python 3.10 at least
 ```bash
 python -m venv venv
 ```
+
+### Download the CLIP and SAM2 models
+https://drive.google.com/drive/folders/1Hdp0WnElVlnbCU7yC7Zpc8ynxmdxiKdP?usp=sharing
+
 ### Activating Environment
 #### Windows
 ```bash
@@ -28,6 +32,10 @@ source venv/bin/activate
 ### Installing Libraries
 ```bash
 pip install -r requirements.txt
+cd sam2 & pip install -e .
+cd checkpoints && \
+./download_ckpts.sh && \
+cd ..
 ```
 ## Using AgriParcel
 ### Parameters
