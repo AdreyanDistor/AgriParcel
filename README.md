@@ -11,7 +11,7 @@ AgriParcel is a grameowrk for generating large-scale farmland vector datasets fr
 
 
 ## Setup
-AgriParcel requires Python 3.8 at least
+AgriParcel requires Python 3.10 at least
 ### Environment Setup (~3.6 GB of space)
 ```bash
 python -m venv venv
