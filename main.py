@@ -14,6 +14,9 @@ from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
 import shapely
 import json
 import time
+import sys
+sys.path.insert(0, 'src/delineation')
+sys.path.insert(0, 'sam2')
 
 def calculate_acres(geometry, crs):
     if crs.is_projected:
@@ -32,7 +35,7 @@ def generate_farmland_data(
     output_path,
     unsimplified_path,
     mask_json_name,
-    confidence_threshold=0.7,
+    confidence_threshold=0.5,
     points_per_side=32,
     points_per_batch=64,
     pred_iou_thresh=0.88,
@@ -171,4 +174,3 @@ if __name__ == '__main__':
         confidence_threshold=args.conf,
         dir_crs=3857
     )
-
