@@ -156,6 +156,7 @@ if __name__ == '__main__':
     parser.add_argument('--sam_config', type=str, default='configs/sam2.1/sam2.1_hiera_l.yaml')
     parser.add_argument('--sam_ckpt', type=str, default='models/sam2.1_hiera_large.pt')
     parser.add_argument('--conf', type=float, default=0.7, help='Confidence threshold for CLIP classifier')
+    parser.add_argument('--crs', type=int, default=3857, help='Coordinate System of Satellite Imagery')
     args = parser.parse_args()
 
     generate_farmland_data(

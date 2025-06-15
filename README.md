@@ -51,7 +51,7 @@ cd ..
 | `--sam_config`  | str    | `configs/sam2.1/sam2.1_hiera_l.yaml`      | Path to the YAML config file for initializing the SAM2 model.                                |
 | `--sam_ckpt`    | str    | `models/sam2.1_hiera_large.pt`            | Path to the SAM2 checkpoint `.pt` file containing pretrained weights.                        |
 | `--conf`        | float  | `0.5`                                      | CLIP classification confidence threshold (only masks with higher confidence are retained).    |
-
+| `--crs`        | int  | `3857`                                      | Coordinate System of Satellite Imagery.    |
 ### Example Usage
 ```bash
 python src/main.py \
