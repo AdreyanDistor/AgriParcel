@@ -15,7 +15,7 @@ import shapely
 import json
 import time
 import sys
-sys.path.insert(0, 'src/delineation')
+sys.path.insert(0, 'src/delineation/object_delineation')
 sys.path.insert(0, 'sam2')
 
 def calculate_acres(geometry, crs):
@@ -43,7 +43,7 @@ def generate_farmland_data(
     stability_score_offset=1.0,
     crop_n_layers=0,
     crop_n_points_downscale_factor=1,
-    box_nms_thresh=0.7,
+    box_nms_thresh=0.5,
     min_mask_region_area=0,
     use_m2m=False,
     dir_crs=4326
