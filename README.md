@@ -17,8 +17,9 @@ AgriParcel requires Python 3.10 at least
 python -m venv venv
 ```
 
-### Download the CLIP and SAM2 models
+### Download the CLIP and SAM2 models (download the entire folder)
 https://drive.google.com/drive/folders/1Hdp0WnElVlnbCU7yC7Zpc8ynxmdxiKdP?usp=sharing
+Place models in the same parenty directory as src
 
 ### Activating Environment
 #### Windows
