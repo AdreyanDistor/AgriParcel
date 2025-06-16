@@ -19,7 +19,7 @@ git clone --recurse-submodules
 ```
 ### Environment Setup (~3.6 GB of space)
 ```bash
-python -m venv venv
+python3.10 -m venv venv
 ```
 
 ### Download the CLIP and SAM2 models (download the entire folder)
