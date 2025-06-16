@@ -15,11 +15,11 @@ AgriParcel requires Python 3.10 at least
 Total Time for Installation: ~m
 ### Installing AgriParcel
 ```bash
-git clone --recurse-submodules
+git clone --recurse-submodules https://github.com/AdreyanDistor/AgriParcel.git
 ```
 ### Environment Setup (~3.6 GB of space)
 ```bash
-python3.10 -m venv venv
+python -m venv venv
 ```
 
 ### Download the CLIP and SAM2 models (download the entire folder)
