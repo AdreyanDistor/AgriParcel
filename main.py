@@ -95,7 +95,6 @@ def generate_farmland_data(
 
                 pred_class = class_names[np.argmax(probs)]
                 confidence = np.max(probs)
-                
                 print(f'Mask: {mask_file} | Prediction: {pred_class} ({confidence:.2f})')
 
                 if pred_class != 'Farmland' or confidence < confidence_threshold:
@@ -105,15 +104,29 @@ def generate_farmland_data(
                 with rasterio.open(mask_path) as geo:
                     affine_transform = geo.transform
                     img_crs = geo.crs
-                   
+
                 if img.mode != 'RGB':
-                    img = img.convert('RGB')
-                    
+                    img = img.convert('RGBA')  # Needed for alpha channel
+
                 img_array = np.array(img)
-                bin_mask = (img_array[:, :, 3] > 0).astype(np.uint8)
-                polys = delineate(bin_mask, affine_transform)
+
+                try:
+                    bin_mask = (img_array[:, :, 3] > 0).astype(np.uint8)
+                    polys = delineate(bin_mask, affine_transform)
+                    if not polys:
+                        print(f'No polygons generated from {mask_file}')
+                        continue
+                except Exception as e:
+                    print(f'Error during delineation in {mask_file}: {e}')
+                    continue
+
+                try:
+                    simplified = shapely.simplify(polys, tolerance=10)
+                except Exception as e:
+                    print(f'Error simplifying polygons in {mask_file}: {e}')
+                    simplified = polys  # Fallback: use raw polygons
+
                 polygons.extend(polys)
-                simplified = shapely.simplify(polys, tolerance=10)
                 simplified_polygons.extend(simplified)
 
                 for p in polys:
@@ -122,12 +135,21 @@ def generate_farmland_data(
                     confidences.append(confidence)
                     curr_id += 1
 
-                total_area_processed += sum(calculate_acres(p, img_crs) for p in polys)
-                total_masks_processed += len(polys)
-                clipped_mask_json.append({'id': mask_id, 'filename': mask_file, 'confidence': float(confidence)})
+                try:
+                    total_area_processed += sum(calculate_acres(p, img_crs) for p in polys)
+                    total_masks_processed += len(polys)
+                except Exception as e:
+                    print(f'Error calculating area/perimeter in {mask_file}: {e}')
+
+                clipped_mask_json.append({
+                    'id': mask_id,
+                    'filename': mask_file,
+                    'confidence': float(confidence)
+                })
                 mask_id += 1
+
         except Exception as e:
-            print(f'Error processing {mask_file}: {e}')
+            print(f'Unhandled error processing {mask_file}: {e}')
 
     if img_crs is None:
         img_crs = dir_crs
@@ -135,6 +157,7 @@ def generate_farmland_data(
     for suffix, geoms in [('nonsimplified', polygons), ('simplified', simplified_polygons)]:
         try:
             if not geoms:
+                print(f'No geometries for {suffix}, skipping write.')
                 continue
             gdf = gpd.GeoDataFrame(geometry=geoms, crs=img_crs)
             gdf['confidence'] = confidences
@@ -142,17 +165,20 @@ def generate_farmland_data(
             gdf['perimeter_sqft'] = gdf.to_crs(epsg=2272).length
             gdf.insert(0, 'id', accepted_ids)
             gdf.insert(1, 'file_name', accepted_filenames)
-            
+
             for column in gdf.select_dtypes(include=['float16']).columns:
                 gdf[column] = gdf[column].astype('float32')
-                
+
             out_name = output_path if suffix == 'simplified' else unsimplified_path
             gdf.to_file(f'{out_name}.geojson', driver='GeoJSON')
         except Exception as e:
-            print(f'Failed to write {suffix} file: {e}')
+            print(f'Failed to write {suffix} GeoJSON: {e}')
 
-    with open(f'{mask_json_name}.json', 'w') as f:
-        json.dump(clipped_mask_json, f, indent=4)
+    try:
+        with open(f'{mask_json_name}.json', 'w') as f:
+            json.dump(clipped_mask_json, f, indent=4)
+    except Exception as e:
+        print(f'Failed to write mask metadata JSON: {e}')
 
     total_time = time.time() - start_time
     print('\n=== Pipeline Summary ===')
@@ -161,6 +187,7 @@ def generate_farmland_data(
     print(f'Total time taken: {total_time:.2f} seconds')
     print(f'Acres/sec: {total_area_processed / total_time:.4f}')
     print('Pipeline complete.')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Agri Parcel Vector Generation Pipeline')
