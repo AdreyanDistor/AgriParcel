@@ -12,7 +12,7 @@ AgriParcel is a grameowrk for generating large-scale farmland vector datasets fr
 
 ## Setup
 AgriParcel requires Python 3.10 at least
-Total Time for Installation: ~m
+Total Time for Installation: ~30m
 ### Installing AgriParcel
 ```bash
 git clone --recurse-submodules https://github.com/AdreyanDistor/AgriParcel.git
