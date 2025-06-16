@@ -17,7 +17,7 @@ Total Time for Installation: ~m
 ```bash
 git clone --recurse-submodules https://github.com/AdreyanDistor/AgriParcel.git
 ```
-### Environment Setup (~3.6 GB of space)
+### Environment Setup (~3.6 GB of space, setup outside of AgriParcel Directory)
 ```bash
 python -m venv venv
 ```

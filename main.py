@@ -1,3 +1,9 @@
+import sys
+sys.path.insert(0, 'src/delineation')
+sys.path.insert(0, 'src/clip')
+sys.path.insert(0, 'src/sam2')
+sys.path.insert(0, 'sam2')
+
 import os
 import argparse
 import torch
@@ -6,17 +12,14 @@ from PIL import Image
 import rasterio
 import geopandas as gpd
 from torchvision import transforms
-from clip.model_utils import load_clip_model
-from delineation.object_delineation import delineate
-from sam2.run_sam2 import generate_masks
+from model_utils import load_clip_model
+from object_delineation import delineate
+from run_sam2 import generate_masks
 from sam2.build_sam import build_sam2
 from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
 import shapely
 import json
 import time
-import sys
-sys.path.insert(0, 'src/delineation/object_delineation')
-sys.path.insert(0, 'sam2')
 
 def calculate_acres(geometry, crs):
     if crs.is_projected:
@@ -92,15 +95,22 @@ def generate_farmland_data(
 
                 pred_class = class_names[np.argmax(probs)]
                 confidence = np.max(probs)
+                
+                print(f'Mask: {mask_file} | Prediction: {pred_class} ({confidence:.2f})')
+
                 if pred_class != 'Farmland' or confidence < confidence_threshold:
+                    print(f'{mask_file} is not Farmland (below threshold)')
                     continue
 
                 with rasterio.open(mask_path) as geo:
                     affine_transform = geo.transform
                     img_crs = geo.crs
-                    img_array = np.array(img)
-                    bin_mask = (img_array[:, :, 3] > 0).astype(np.uint8)
-
+                   
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
+                    
+                img_array = np.array(img)
+                bin_mask = (img_array[:, :, 3] > 0).astype(np.uint8)
                 polys = delineate(bin_mask, affine_transform)
                 polygons.extend(polys)
                 simplified = shapely.simplify(polys, tolerance=10)
@@ -132,6 +142,10 @@ def generate_farmland_data(
             gdf['perimeter_sqft'] = gdf.to_crs(epsg=2272).length
             gdf.insert(0, 'id', accepted_ids)
             gdf.insert(1, 'file_name', accepted_filenames)
+            
+            for column in gdf.select_dtypes(include=['float16']).columns:
+                gdf[column] = gdf[column].astype('float32')
+                
             out_name = output_path if suffix == 'simplified' else unsimplified_path
             gdf.to_file(f'{out_name}.geojson', driver='GeoJSON')
         except Exception as e:
@@ -141,7 +155,7 @@ def generate_farmland_data(
         json.dump(clipped_mask_json, f, indent=4)
 
     total_time = time.time() - start_time
-    print('\\n=== Pipeline Summary ===')
+    print('\n=== Pipeline Summary ===')
     print(f'Total area processed: {total_area_processed:.4f} acres')
     print(f'Total masks processed: {total_masks_processed}')
     print(f'Total time taken: {total_time:.2f} seconds')
@@ -155,7 +169,7 @@ if __name__ == '__main__':
     parser.add_argument('--unsimplified', type=str, default='outputs/final_output_nonsimplified', help='Path to unsimplified GeoJSON')
     parser.add_argument('--json', type=str, default='outputs/final_metadata', help='Path to save metadata JSON')
     parser.add_argument('--maskdir', type=str, default='outputs/farmland_masks', help='Folder to store generated masks')
-    parser.add_argument('--clip_model', type=str, default='models/clip_model.pt')
+    parser.add_argument('--clip_model', type=str, default='models/clip_model.pth')
     parser.add_argument('--sam_config', type=str, default='configs/sam2.1/sam2.1_hiera_l.yaml')
     parser.add_argument('--sam_ckpt', type=str, default='models/sam2.1_hiera_large.pt')
     parser.add_argument('--conf', type=float, default=0.5, help='Confidence threshold for CLIP classifier')
@@ -172,5 +186,5 @@ if __name__ == '__main__':
         unsimplified_path=args.unsimplified,
         mask_json_name=args.json,
         confidence_threshold=args.conf,
-        dir_crs=3857
+        dir_crs=args.crs
     )

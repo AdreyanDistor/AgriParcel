@@ -1,13 +1,28 @@
+import sys
+sys.path.insert(0, 'src/utils')
+sys.path.insert(0, 'src/sam2')
 
 import os
 import rasterio
 import numpy as np
 from rasterio.plot import reshape_as_image
-from utils.io import list_images, get_basename
-from sam2.mask_utils import save_mask
+from io import *
+from mask_utils import save_mask
 import gc
 import torch
 from concurrent.futures import ThreadPoolExecutor
+
+
+def ensure_dir(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+def list_images(folder, extensions=('.tif', '.tiff', '.jpg', '.png')):
+    return [f for f in os.listdir(folder) if f.lower().endswith(extensions)]
+
+def get_basename(path):
+    return os.path.splitext(os.path.basename(path))[0]
+
 
 def generate_masks(directory, output_dir, mask_generator, return_segmented=True, name='mask'):
     images = list_images(directory, extensions=('.tif', '.tiff'))
