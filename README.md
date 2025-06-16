@@ -20,7 +20,6 @@ git clone --recurse-submodules
 ### Environment Setup (~3.6 GB of space)
 ```bash
 python -m venv venv
-cd AgriParcel
 ```
 
 ### Download the CLIP and SAM2 models (download the entire folder)
@@ -38,6 +37,7 @@ source venv/bin/activate
 ```
 ### Installing Libraries
 ```bash
+cd AgriParcel
 pip install -r requirements.txt
 cd sam2
 pip install -e .
