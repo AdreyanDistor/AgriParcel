@@ -16,11 +16,11 @@ Total Time for Installation: ~m
 ### Installing AgriParcel
 ```bash
 git clone --recurse-submodules
-cd AgriParcel
 ```
 ### Environment Setup (~3.6 GB of space)
 ```bash
 python -m venv venv
+cd AgriParcel
 ```
 
 ### Download the CLIP and SAM2 models (download the entire folder)
