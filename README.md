@@ -12,7 +12,7 @@ AgriParcel is a grameowrk for generating large-scale farmland vector datasets fr
 
 ## Setup
 AgriParcel requires Python 3.10 at least
-
+Total Time for Installation: ~m
 ### Installing AgriParcel
 ```bash
 git clone --recurse-submodules
@@ -39,7 +39,8 @@ source venv/bin/activate
 ### Installing Libraries
 ```bash
 pip install -r requirements.txt
-cd sam2 & pip install -e .
+cd sam2
+pip install -e .
 cd checkpoints && \
 ./download_ckpts.sh && \
 cd ..
@@ -60,7 +61,7 @@ cd ..
 | `--crs`        | int  | `3857`                                      | Coordinate System of Satellite Imagery.    |
 ### Example Usage
 ```bash
-python src/main.py \
+python main.py \
   --input data/test_data \
   --output outputs/simplified_output \
   --unsimplified outputs/raw_output \
