@@ -2,6 +2,7 @@
 import os
 from torch.utils.data import Dataset
 from PIL import Image
+import numpy as np
 
 class FarmlandDataset(Dataset):
     def __init__(self, root_dir, class_names, transform=None):
@@ -20,7 +21,7 @@ class FarmlandDataset(Dataset):
                 continue
             for root, _, files in os.walk(cls_dir):
                 for file in files:
-                    if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff')):
+                    if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.tif')):
                         samples.append((os.path.join(root, file), cls_idx))
         return samples
 
@@ -35,5 +36,4 @@ class FarmlandDataset(Dataset):
                 img = self.transform(img)
             return img, label
         except:
-            import numpy as np
             return self[np.random.randint(0, len(self))]

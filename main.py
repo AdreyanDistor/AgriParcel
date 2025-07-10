@@ -106,7 +106,7 @@ def generate_farmland_data(
                     img_crs = geo.crs
 
                 if img.mode != 'RGB':
-                    img = img.convert('RGBA')  # Needed for alpha channel
+                    img = img.convert('RGBA')
 
                 img_array = np.array(img)
 
@@ -124,7 +124,7 @@ def generate_farmland_data(
                     simplified = shapely.simplify(polys, tolerance=10)
                 except Exception as e:
                     print(f'Error simplifying polygons in {mask_file}: {e}')
-                    simplified = polys  # Fallback: use raw polygons
+                    simplified = polys
 
                 polygons.extend(polys)
                 simplified_polygons.extend(simplified)

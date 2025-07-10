@@ -1,4 +1,3 @@
-# Refactored CLIP + SAM2 Evaluation Script
 import os
 import sys
 import torch

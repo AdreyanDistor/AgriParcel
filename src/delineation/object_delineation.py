@@ -19,7 +19,6 @@ def grid_to_world(c, r, transform = None):
     lon, lat = transform * (c, r)
     return lon, lat
 
-#there are instances where nexy stays as Null
 def orthogonal_line_detection(mask: np.ndarray) -> list[vertex_pointer]:
     h, w = mask.shape
     top_vertices = [None] * (w + 1)
@@ -136,35 +135,3 @@ def test1():
 
 def binarize(img_path):
     return np.array(Image.open(img_path).convert('1'))
-
-def main():
-    binary_img = 'binarize.png'
-    geo_tiff = 'data.tiff'
-    affine_transform = 1
-    with rasterio.open(geo_tiff) as geo:
-        affine_transform = geo.transform
-    binary = np.array(Image.open(binary_img).convert('L'))
-    mask = binarize(binary_img)
-    polygons = delineate(mask, affine_transform)
-    gdf = gpd.GeoDataFrame(geometry=polygons, crs=geo.crs)
-    gdf.to_file('data2.geojson', driver='GeoJSON')
-
-def test1():
-    mask_path = 'mask_0.tif'
-    with Image.open(mask_path) as img:
-        with rasterio.open(mask_path) as geo:
-            affine_transform = geo.transform
-            img_crs = geo.crs
-
-            img_array = np.array(img)
-                        
-            bin_mask = np.all(img_array != [0, 0, 0], axis=-1).astype(np.uint8) * 1
-            kernel = np.ones((5, 5), np.uint8) 
-            closing = bin_mask
-            # plt.show(closing)
-            polygon = delineate(closing, affine_transform)
-            gdf = gpd.GeoDataFrame(geometry=polygon)
-            gdf.crs = 'EPSG:4326'
-            gdf.to_file('w.geojson', driver='GeoJSON')
-if __name__ == "__main__":
-    test1()
