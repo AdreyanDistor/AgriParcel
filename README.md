@@ -1,5 +1,5 @@
 # AgriParcel
-AgriParcel is a grameowrk for generating large-scale farmland vector datasets from satelite imagery. By utilizing zero-shot segmentation from [**SAM2**](https://github.com/facebookresearch/sam2) and a fine-tuned [**CLIP**](https://github.com/openai/CLIP) model for farmland classification, we can generate ready to use vector datasets within a GeoJSON file. 
+AgriParcel is a grameowrk for generating large-scale farmland vector datasets from satellite imagery. By utilizing zero-shot segmentation from [**SAM2**](https://github.com/facebookresearch/sam2) and a fine-tuned [**CLIP**](https://github.com/openai/CLIP) model for farmland classification, we can generate ready to use vector datasets within a GeoJSON file. 
 
 *Note: It is only possible to run on computers or systems with large amounts of RAM*
 
